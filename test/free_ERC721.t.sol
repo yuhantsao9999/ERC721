@@ -2,7 +2,7 @@
 pragma solidity ^0.8.13;
 
 import {Test, console2} from "forge-std/Test.sol";
-import {NFTHW2} from "../src/NFTHW2.sol";
+import {NFTHW2} from "../src/free_ERC721.sol";
 
 contract NFTHW2Test is Test {
     NFTHW2 public nft;
