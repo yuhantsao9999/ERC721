@@ -1,20 +1,25 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-import {ERC20} from "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import {ERC721} from "@openzeppelin/contracts/token/ERC721/ERC721.sol";
+import "@openzeppelin/contracts/token/ERC721/ERC721.sol";
 import "@openzeppelin/contracts/token/ERC721/IERC721Receiver.sol";
-import "@openzeppelin/contracts/access/Ownable.sol";
 
 contract NoUseful is ERC721 {
     constructor() ERC721("appworksSchool", "APS") {}
+
+    function mint(uint256 tokenId, address receiver) public {
+        _safeMint(receiver, tokenId);
+    }
 }
 
 contract HW_Token is ERC721 {
+    uint256 public count;
+
     constructor() ERC721("Do not send NFT to me", "NONFT") {}
 
-    function mint(uint256 tokenId) public {
-        _safeMint(msg.sender, tokenId);
+    function mint(uint256 tokenId, address receiver) public {
+        _safeMint(receiver, tokenId);
+        count += 1;
     }
 
     function tokenURI() public view virtual returns (string memory) {
@@ -39,11 +44,11 @@ contract NFTReceiver is IERC721Receiver {
         bytes memory data
     ) public override returns (bytes4) {
         // 1. Check the sender to make sure it's the "NoUseful" contract
-        if (msg.sender != address(noUsefulContract)) {
+        if (msg.sender != address(hwTokenContract)) {
             // 2. If not, transfer the "nouseful" token back to the original owner
             noUsefulContract.safeTransferFrom(address(this), from, tokenId);
             // 3. Mint HW_Token for the original owner
-            hwTokenContract.mint(tokenId);
+            hwTokenContract.mint(hwTokenContract.count(), from);
         }
 
         return this.onERC721Received.selector;
